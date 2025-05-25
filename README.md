@@ -15,10 +15,7 @@ Dự án này tập trung vào nhận diện biển số xe tự động (LPR) b
 ## Dữ Liệu
 Bộ dữ liệu được sử dụng để huấn luyện có thể truy cập tại: https://www.kaggle.com/datasets/duydieunguyen/licenseplates
 
-## Hướng Dẫn Sử Dụng
-- Tải lên hình ảnh hoặc cung cấp luồng video.
-- Chương trình sẽ tự động phát hiện và nhận diện biển số xe.
-
 ## Kết quả
-- Chi tiết kết quả thực nghiệm có thể xem tại thư mục output.
-
+Chi tiết kết quả thực nghiệm có thể xem tại đây:
+- [**Video1**](https://drive.google.com/file/d/1dKnLay8B-CD60jw8qMV5Sgrjc7VMSRHh/view?usp=sharing)
+- [**Video2**](https://drive.google.com/file/d/1pWgReYV7MwrY6MT2g2enM7wDeG4b2_e1/view?usp=sharing)
