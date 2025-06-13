@@ -61,10 +61,3 @@ class ALPR():
 
         return result_texts
     
-
-if __name__ == '__main__':
-    alpr = ALPR(r'D:\VSCodeProjects\license_plate_regconition\weight\best.pt')
-    img_path = r'D:\VSCodeProjects\license_plate_regconition\imgs\plate2.png'
-    img_arr = cv2.imread(img_path)
-    result = alpr.predict(img_arr)
-    print(result)
