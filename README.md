@@ -108,4 +108,4 @@ Mọi đóng góp đều được chào đón! Vui lòng tạo Pull Request ho�
 
 Để kích hoạt lại API hoặc được hỗ trợ kỹ thuật, vui lòng liên hệ:
 - Email: dungnguyen.workspace@gmail.com
-- GitHub: [@marknguyenn02](https://github.com/marknguyenn02)
+- GitHub: [@marknguyen02](https://github.com/marknguyenn02)
