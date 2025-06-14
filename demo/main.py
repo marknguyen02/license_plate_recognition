@@ -14,8 +14,8 @@ alpr = ALPR()
 
 
 class Config:
-    VIDEO_PATH = r"D:\VSCodeProjects\license_plate_regconition\media\video_test.mp4"
-    OUTPUT_DIR = r'D:\VSCodeProjects\license_plate_regconition\demo\output'
+    VIDEO_PATH = os.path.join(os.getcwd(), "media", "video_test.mp4")
+    OUTPUT_DIR = os.path.join(os.getcwd(), 'demo', 'output')
     VIDEO_WIDTH_RATIO = 0.55
     VIDEO_HEIGHT_RATIO = 0.9
     FRAME_UPDATE_INTERVAL = 33
