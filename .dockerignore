@@ -20,6 +20,5 @@ Thumbs.db
 .idea/
 
 demo/
-imgs/
-tests/
+media/
 *.ipynb
