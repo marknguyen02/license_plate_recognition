@@ -2,11 +2,15 @@ import torch
 from ultralytics import YOLO
 from easyocr import Reader
 import re
-import cv2
+import os
+import numpy as np
 
 
 class ALPR():
-    def __init__(self, weigth_path) -> None:
+    def __init__(
+        self, 
+        weigth_path = os.path.join(os.getcwd(), 'weightS', 'best.pt')
+    ) -> None:
         self.weight_path = weigth_path
         self.yolo = self._load_yolo_model()
         self.ocr = self._load_ocr_model()
@@ -44,18 +48,19 @@ class ALPR():
         return norm_text
 
     
-    def predict(self, img_arr):
+    def predict(self, img_arr: np.ndarray):
         boxes = self._detect(img_arr)
+        
         result_texts = []
 
         for x_min, y_min, x_max, y_max in boxes:
             cropped_plate = img_arr[y_min:y_max, x_min:x_max]
             ocr_results = self.ocr.readtext(cropped_plate)
 
-            if ocr_results is None:
+            if not ocr_results:
                 continue
 
-            plate_text = ''.join([text for _, text, _ in ocr_results])
+            plate_text = ''.join([text.upper() for _, text, _ in ocr_results])
             normalized_text = self._normalize(plate_text)
             result_texts.append(normalized_text)
 

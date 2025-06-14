@@ -9,8 +9,7 @@ from flasgger import Swagger
 app = Flask(__name__)
 swagger = Swagger(app)
 
-weight_path = os.path.join(os.getcwd(), 'weight', 'best.pt')
-alpr = ALPR(weight_path)
+alpr = ALPR()
 
 @app.route('/')
 def home():
