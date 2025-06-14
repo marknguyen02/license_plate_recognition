@@ -104,14 +104,7 @@ python -m app.main
 
 ### Video thời gian thực
 
-<video width="100%" controls muted>
-  <source src="./demo/output/demo_output_20250614_130554.mp4" type="video/mp4">
-  Trình duyệt của bạn không hỗ trợ video.
-</video>
-
-## Đóng góp
-
-Mọi đóng góp đều được chào đón! Vui lòng tạo Pull Request hoặc mở Issue để thảo luận.
+Mời bạn xem video demo tại thư mục [`demo/output`](./demo/output).
 
 ## Liên hệ hỗ trợ
 
