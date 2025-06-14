@@ -97,13 +97,17 @@ docker run -p 8080:8080 alpr-api
 python -m app.main
 ```
 
-## Yêu cầu hệ thống
+## Demo kết quả
+### Hình ảnh tĩnh
 
-- Python 3.8+
-- OpenCV
-- PyTorch
-- EasyOCR
-- Flask
+<img src="./media/result_plate.png"/>
+
+### Video thời gian thực
+
+<video width="100%" controls muted>
+  <source src="./demo/output/demo_output_20250614_130554.mp4" type="video/mp4">
+  Trình duyệt của bạn không hỗ trợ video.
+</video>
 
 ## Đóng góp
 

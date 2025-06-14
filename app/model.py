@@ -10,7 +10,7 @@ class ALPR():
     def __init__(
         self, 
         weigth_path = os.path.join(os.getcwd(), 'weightS', 'best.pt')
-    ) -> None:
+    ):
         self.weight_path = weigth_path
         self.yolo = self._load_yolo_model()
         self.ocr = self._load_ocr_model()
@@ -24,7 +24,7 @@ class ALPR():
         ocr = Reader(['en'], gpu=use_gpu)
         return ocr
     
-    def _detect(self, img_arr):
+    def detect(self, img_arr):
         h, w = img_arr.shape[:2]
         yolo_result = self.yolo.predict(source=img_arr, verbose=False)
         boxes = yolo_result[0].boxes
@@ -49,7 +49,7 @@ class ALPR():
 
     
     def predict(self, img_arr: np.ndarray):
-        boxes = self._detect(img_arr)
+        boxes = self.detect(img_arr)
         
         result_texts = []
 

@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 from waitress import serve
 from .model import ALPR
-import os
 import cv2
 import numpy as np
 from flasgger import Swagger
