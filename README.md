@@ -24,6 +24,11 @@ license_plate_recognition/
 └── README.md                # Documentation
 ```
 
+## Dữ liệu và huấn luyện
+
+- Bộ dữ liệu huấn luyện mô hình: [License Plate Dataset](https://www.kaggle.com/datasets/duydieunguyen/licenseplates)
+- Notebook huấn luyện mô hình: [License Plate Detection Training](https://www.kaggle.com/code/marknguyen02/license-plate-detection)
+
 ## Khởi tạo dự án
 
 ### Phát triển từ mã nguồn
