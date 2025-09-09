@@ -21,7 +21,7 @@ Below are a few illustrative examples:
 | Input Image | Model Output |
 |-------------|--------------|
 | ![Sample 1](data/images/carlong_0283.png) | ![Result](data/outputs/carlong_0283.png) |
-| ![Sample 2](data/images/carlong_0284.png) | ![Result](data/outputs/carlong_0284.png) |
+| ![Sample 2](data/images/greenpack_1210.png) | ![Result](data/outputs/greenpack_1210.png) |
 
 ---
 
