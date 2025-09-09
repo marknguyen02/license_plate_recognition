@@ -9,20 +9,22 @@ A deep learning system for automatic license plate detection and recognition.
 This project applies **Ultralytics YOLO** for license plate detection and a **PyTorch-based OCR model** for character recognition, supported by **OpenCV** and **NumPy**.
 
 * **Performance**: Evaluated on 400 samples with 398 correct recognitions and only 2 errors.
-* **Evaluation**: Extensive visualizations and detailed analysis are available in the results directory.
+* **Evaluation**: Extensive visualizations and detailed analysis are available in the data directory.
 
 ---
 
 ## Results
 
-Example outputs (see more in [`results/`](./results)):
+Comprehensive evaluation outputs are available in the [`data/output`](./data/outputs).  
+Below are a few illustrative examples:
 
-| Input                                  | Output                                 |
-| -------------------------------------- | ----------------------------------------- |
-| ![Sample 1](results/images/carlong_0283.png) | ![Detected](results/outputs/carlong_0283.png) |
-| ![Sample 2](results/images/carlong_0284.png) | ![Detected](results/outputs/carlong_0284.png) |
+| Input Image | Model Output |
+|-------------|--------------|
+| ![Sample 1](data/images/carlong_0283.png) | ![Result](data/outputs/carlong_0283.png) |
+| ![Sample 2](data/images/carlong_0284.png) | ![Result](data/outputs/carlong_0284.png) |
 
 ---
+
 
 ## Usage
 
@@ -38,7 +40,7 @@ Run the demo notebook demo.ipynb
 
 ## Notes
 
-* Current version is optimized for Vietnamese license plates, extensible to other formats.
+* Current version is optimized for **Vietnamese license plates**, extensible to other formats.
 * For access to the full dataset or detailed methodology, please contact me.
 
 ---
