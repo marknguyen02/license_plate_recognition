@@ -15,7 +15,7 @@ This project applies **Ultralytics YOLO** for license plate detection and a **Py
 
 ## Results
 
-Comprehensive evaluation outputs are available in the [`data/output`](./data/outputs).  
+Comprehensive evaluation outputs are available in the [`data/outputs`](./data/outputs).  
 Below are a few illustrative examples:
 
 | Input Image | Model Output |
