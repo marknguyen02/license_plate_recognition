@@ -49,6 +49,8 @@ Run the demo notebook demo.ipynb
 
 * Gmail: [dungnguyen.workspace@gmail.com](mailto:dungnguyen.workspace@gmail.com)
 
+---
+
 ## License
 
 Released under the MIT License.
