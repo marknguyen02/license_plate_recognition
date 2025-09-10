@@ -11,7 +11,8 @@ from classification import (
 from utils import (
     smart_padding,
     sort_objects,
-    validate_objects
+    filter_objects_in_plate,
+    remove_character_duplicate_boxes
 )
 
 
@@ -24,7 +25,7 @@ class PlateRecognizer:
         exp_w_ratio=0.15,
         exp_h_ratio=0.1,
         conf_thresh=0.7,
-        iou_thresh=0.1
+        iou_char_thresh=0.7
     ):
         self.yolo_model = YOLO(yolo_ckpt)
         self.digit_model = get_digit_model(digit_ckpt)
@@ -32,13 +33,18 @@ class PlateRecognizer:
         self.exp_w_ratio = exp_w_ratio
         self.exp_h_ratio = exp_h_ratio
         self.conf_thresh = conf_thresh
-        self.iou_thresh = iou_thresh
+        self.iou_char_thresh = iou_char_thresh
 
     def detect_batch(self, batch_imgs):
         batch_objects = []
         batch_plates = []
 
-        results = self.yolo_model(batch_imgs, conf=self.conf_thresh, iou=self.iou_thresh, verbose=False)
+        results = self.yolo_model(
+            batch_imgs, 
+            conf=self.conf_thresh, 
+            iou=0.2, 
+            verbose=False
+        )
 
         for img, res in zip(batch_imgs, results):
             height, width = img.shape[:2]
@@ -75,19 +81,23 @@ class PlateRecognizer:
 
                     obj = {
                         'image': img_obj,
+                        'box': (x_min, y_min, x_max, y_max),
                         'center': ((x_lower + x_upper) / 2, (y_lower + y_upper) / 2),
                         'label': label,
                         'conf': conf
                     }
                     objects.append(obj)
 
-            objects = validate_objects(objects, plate)
+            # Normalize objects
+            objects = filter_objects_in_plate(objects, plate)
+            objects = remove_character_duplicate_boxes(objects, self.iou_char_thresh)
+
             batch_objects.append(objects)
             batch_plates.append(plate)
 
         return batch_objects, batch_plates
     
-    def predict_batch(self, batch_inputs):
+    def predict_batch(self, batch_inputs, batch_size=2):
         if isinstance(batch_inputs, list) and all(isinstance(p, str) for p in batch_inputs):
             batch_imgs = [cv2.imread(path) for path in batch_inputs]
         else:
@@ -116,11 +126,11 @@ class PlateRecognizer:
 
         digit_preds = []
         if digit_imgs:
-            digit_preds = predict_digit(digit_imgs, self.digit_model)
+            digit_preds = predict_digit(digit_imgs, self.digit_model, batch_size=batch_size)
 
         letter_preds = []
         if letter_imgs:
-            letter_preds = predict_letter(letter_imgs, self.letter_model)
+            letter_preds = predict_letter(letter_imgs, self.letter_model, batch_size=batch_size)
 
         results = []
         for img_idx, objects in enumerate(batch_objects):
@@ -145,6 +155,7 @@ class PlateRecognizer:
     def visualize_batch(
         self, 
         batch_inputs, *,
+        batch_size=2,
         return_imgs=True,
         cell_w=15,
         cell_h=15,
@@ -189,8 +200,9 @@ class PlateRecognizer:
                     letter_imgs.append(obj["image"])
                     letter_refs.append((img_idx, obj_idx))
 
-        digit_preds = predict_digit(digit_imgs, self.digit_model) if digit_imgs else []
-        letter_preds = predict_letter(letter_imgs, self.letter_model) if letter_imgs else []
+        digit_preds = predict_digit(digit_imgs, self.digit_model, batch_size=batch_size) if digit_imgs else []
+        letter_preds = predict_letter(letter_imgs, self.letter_model, batch_size=batch_size) if letter_imgs else []
+
         digit_map = {ref: pred for ref, pred in zip(digit_refs, digit_preds)}
         letter_map = {ref: pred for ref, pred in zip(letter_refs, letter_preds)}
 
@@ -243,10 +255,10 @@ class PlateRecognizer:
         if output_dir is not None:
             for out_img, file_name in zip(out_imgs, file_names):
                 save_path = os.path.join(output_dir, file_name)
-                if verbose:
-                    if not cv2.imwrite(save_path, out_img):
-                        print(f"Failed to save: {save_path}")
-                    else:
+                if not cv2.imwrite(save_path, out_img):
+                    print(f"Failed to save: {save_path}")
+                else:
+                    if verbose:
                         print(f"Image saved: {save_path}")
 
         if return_imgs:

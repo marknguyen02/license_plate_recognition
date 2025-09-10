@@ -1,7 +1,7 @@
 import cv2
 
 
-def validate_objects(objects, plate):
+def filter_objects_in_plate(objects, plate):
     (x1, y1), (x2, y2) = plate["landmark"]
     height = plate["height"]
 
@@ -19,6 +19,37 @@ def validate_objects(objects, plate):
 
     return norm_objects
 
+
+def remove_character_duplicate_boxes(objects, iou_thresh):
+    def iou_score(box1, box2):
+        x1_min, y1_min, x1_max, y1_max = box1
+        x2_min, y2_min, x2_max, y2_max = box2
+
+        inter_x_min = max(x1_min, x2_min)
+        inter_y_min = max(y1_min, y2_min)
+        inter_x_max = min(x1_max, x2_max)
+        inter_y_max = min(y1_max, y2_max)
+
+        inter_width = max(0, inter_x_max - inter_x_min)
+        inter_height = max(0, inter_y_max - inter_y_min)
+        inter_area = inter_width * inter_height
+
+        area1 = (x1_max - x1_min) * (y1_max - y1_min)
+        area2 = (x2_max - x2_min) * (y2_max - y2_min)
+        union_area = area1 + area2 - inter_area
+
+        if union_area == 0:
+            return 0.0
+
+        return inter_area / union_area
+    
+    filtered_objs = []
+    while objects:
+        current = objects.pop(0)
+        filtered_objs.append(current)
+        objects = [obj for obj in objects if iou_score(current['box'], obj['box']) < iou_thresh]
+
+    return filtered_objs
 
 def sort_objects(objects, plate):
     if plate["label"] == "one_row":

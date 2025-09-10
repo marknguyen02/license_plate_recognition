@@ -110,7 +110,7 @@ def get_letter_model(letter_ckpt, num_classes=21):
     return model
 
 
-def predict_digit(image_arrs, model, batch_size=4):
+def predict_digit(image_arrs, model, batch_size):
     dataset = ObjectDataset(image_arrs, transform=transform)
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
 
@@ -124,7 +124,7 @@ def predict_digit(image_arrs, model, batch_size=4):
     return preds
 
 
-def predict_letter(image_arrs, model, batch_size=4):
+def predict_letter(image_arrs, model, batch_size):
     dataset = ObjectDataset(image_arrs, transform=transform)
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
 
