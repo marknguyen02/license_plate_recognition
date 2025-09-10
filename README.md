@@ -8,7 +8,7 @@ A deep learning system for automatic license plate detection and recognition.
 
 This project applies **Ultralytics YOLO** for license plate detection and a **PyTorch-based OCR model** for character recognition, supported by **OpenCV** and **NumPy**.
 
-* **Performance**: Evaluated on 400 samples with 398 correct recognitions and only 2 errors.
+* **Performance**: Achieved **100% accuracy** on the test set of 400 samples, with all license plates correctly recognized.
 * **Evaluation**: Extensive visualizations and detailed analysis are available in the data directory.
 
 ---
