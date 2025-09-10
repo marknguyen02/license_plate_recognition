@@ -30,7 +30,7 @@ Below are a few illustrative examples:
 
 ```bash
 git clone https://github.com/marknguyen02/license_plate_recognition.git
-cd license-plate-recognition
+cd license_plate_recognition
 pip install -r requirements.txt
 ```
 
