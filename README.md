@@ -29,8 +29,8 @@ Below are a few illustrative examples:
 ## Usage
 
 ```bash
-git clone https://github.com/marknguyen02/license_plate_recognition.git
-cd license_plate_recognition
+git clone https://github.com/marknguyen02/license-plate-recognition.git
+cd license-plate-recognition
 pip install -r requirements.txt
 ```
 
