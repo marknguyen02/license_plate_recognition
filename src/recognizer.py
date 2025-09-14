@@ -156,7 +156,7 @@ class PlateRecognizer:
         self, 
         batch_inputs, *,
         batch_size=2,
-        return_imgs=True,
+        return_imgs=False,
         cell_w=15,
         cell_h=15,
         font_scale=0.35, 
