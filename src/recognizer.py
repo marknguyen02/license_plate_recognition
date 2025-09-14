@@ -98,7 +98,10 @@ class PlateRecognizer:
         return batch_objects, batch_plates
     
     def predict_batch(self, batch_inputs, batch_size=2):
-        if isinstance(batch_inputs, list) and all(isinstance(p, str) for p in batch_inputs):
+        if not isinstance(batch_inputs, list):
+            batch_inputs = [batch_inputs]
+
+        if all(isinstance(p, str) for p in batch_inputs):
             batch_imgs = [cv2.imread(path) for path in batch_inputs]
         else:
             batch_imgs = batch_inputs
