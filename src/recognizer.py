@@ -1,7 +1,9 @@
 import os
 from datetime import datetime
+from collections import Counter
 import cv2
 from ultralytics import YOLO
+
 from classification import (
     get_digit_model, 
     get_letter_model,
@@ -88,7 +90,6 @@ class PlateRecognizer:
                     }
                     objects.append(obj)
 
-            # Normalize objects
             objects = filter_objects_in_plate(objects, plate)
             objects = remove_character_duplicate_boxes(objects, self.iou_char_thresh)
 
@@ -168,9 +169,10 @@ class PlateRecognizer:
         char_color=(0, 255, 0),
         conf_color=(255, 255, 0),
         output_dir=None,
-        verbose=True
+        verbose=False
     ):
-        os.makedirs(output_dir, exist_ok=True)
+        if output_dir is not None:
+            os.makedirs(output_dir, exist_ok=True)
 
         file_names = []
         if isinstance(batch_inputs, list) and all(isinstance(p, str) for p in batch_inputs):
@@ -266,3 +268,143 @@ class PlateRecognizer:
 
         if return_imgs:
             return out_imgs
+        
+    def visualize_video(
+        self,
+        video_path,
+        output_path,
+        batch_size=2,
+        cell_w=40,
+        cell_h=50,
+        font_scale=1.2,
+        thickness=2,
+        plate_color=(0, 255, 255),
+        char_color=(255, 255, 255),
+        conf_color=(0, 255, 0),
+        bg_color=(40, 40, 40),
+        skip_frames=1,
+        vote_frames=5
+    ):
+        from collections import Counter
+        
+        cap = cv2.VideoCapture(video_path)
+        
+        fps = int(cap.get(cv2.CAP_PROP_FPS))
+        w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        out = cv2.VideoWriter(output_path, fourcc, fps, (w, h))
+        
+        frame_idx = 0
+        vote_buffer = []
+        voted_results = None
+        
+        try:
+            while True:
+                ret, frame = cap.read()
+                if not ret:
+                    break
+                
+                if frame_idx % skip_frames == 0:
+                    try:
+                        batch_objects, batch_plates = self.detect_batch([frame])
+                        objects, plate = batch_objects[0], batch_plates[0]
+                        
+                        if plate is not None:
+                            sorted_objs = sort_objects(objects, plate)
+                            digit_imgs, digit_refs, letter_imgs, letter_refs = [], [], [], []
+                            
+                            for obj_idx, obj in enumerate(sorted_objs):
+                                if obj["label"] == "digit":
+                                    digit_imgs.append(obj["image"])
+                                    digit_refs.append(obj_idx)
+                                elif obj["label"] == "letter":
+                                    letter_imgs.append(obj["image"])
+                                    letter_refs.append(obj_idx)
+                            
+                            digit_preds = predict_digit(digit_imgs, self.digit_model, batch_size=batch_size) if digit_imgs else []
+                            letter_preds = predict_letter(letter_imgs, self.letter_model, batch_size=batch_size) if letter_imgs else []
+                            
+                            digit_map = {ref: pred for ref, pred in zip(digit_refs, digit_preds)}
+                            letter_map = {ref: pred for ref, pred in zip(letter_refs, letter_preds)}
+                            
+                            current_results = {}
+                            for obj_idx, obj in enumerate(sorted_objs):
+                                if obj["label"] == "digit" and obj_idx in digit_map:
+                                    current_results[obj_idx] = str(digit_map[obj_idx])
+                                elif obj["label"] == "letter" and obj_idx in letter_map:
+                                    current_results[obj_idx] = str(letter_map[obj_idx])
+                            
+                            vote_buffer.append(current_results)
+                            
+                            if len(vote_buffer) >= vote_frames:
+                                voted_results = {}
+                                all_positions = set()
+                                for results in vote_buffer:
+                                    all_positions.update(results.keys())
+                                
+                                for pos in all_positions:
+                                    votes = [results.get(pos, "?") for results in vote_buffer if pos in results]
+                                    if votes:
+                                        voted_results[pos] = Counter(votes).most_common(1)[0][0]
+                                
+                                vote_buffer.pop(0)
+                            
+                            if voted_results:
+                                (x1, y1), (x2, y2) = plate["landmark"]
+                                height = plate['height']
+                                y_min, y_max = int(y1 - height / 2), int(y2 + height / 2)
+                                x_min, x_max = int(x1), int(x2)
+                                
+                                cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), plate_color, 3)
+                                
+                                conf_text = f"Conf: {plate['conf']:.2f}"
+                                text_size = cv2.getTextSize(conf_text, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)[0]
+                                cv2.rectangle(frame, (x_min, y_max + 5), (x_min + text_size[0] + 10, y_max + 30), bg_color, -1)
+                                cv2.putText(frame, conf_text, (x_min + 5, y_max + 23),
+                                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, plate_color, 2)
+                                
+                                start_x, start_y = 15, 15
+                                num_chars = len(sorted_objs)
+                                panel_width = num_chars * (cell_w + 10) + 20
+                                panel_height = cell_h + 80
+                                
+                                cv2.rectangle(frame, (start_x - 10, start_y - 10), 
+                                            (start_x + panel_width, start_y + panel_height), bg_color, -1)
+                                cv2.rectangle(frame, (start_x - 10, start_y - 10), 
+                                            (start_x + panel_width, start_y + panel_height), plate_color, 2)
+                                
+                                for obj_idx, obj in enumerate(sorted_objs):
+                                    crop_resized = cv2.resize(obj["image"], (cell_w, cell_h))
+                                    crop_resized = cv2.cvtColor(crop_resized, cv2.COLOR_GRAY2BGR)
+                                    
+                                    pred = voted_results.get(obj_idx, "?")
+                                    
+                                    col_x = start_x + obj_idx * (cell_w + 10)
+                                    frame[start_y:start_y + cell_h, col_x:col_x + cell_w] = crop_resized
+                                    
+                                    cv2.rectangle(frame, (col_x - 2, start_y - 2), 
+                                                (col_x + cell_w + 2, start_y + cell_h + 2), (100, 100, 100), 1)
+                                    
+                                    text_size = cv2.getTextSize(pred, cv2.FONT_HERSHEY_SIMPLEX, font_scale, thickness)[0]
+                                    text_x = col_x + (cell_w - text_size[0]) // 2
+                                    text_y = start_y + cell_h + 30
+                                    cv2.putText(frame, pred, (text_x, text_y),
+                                                cv2.FONT_HERSHEY_SIMPLEX, font_scale, char_color, thickness)
+                                    
+                                    conf_str = f"{obj['conf']:.2f}"
+                                    conf_size = cv2.getTextSize(conf_str, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)[0]
+                                    conf_x = col_x + (cell_w - conf_size[0]) // 2
+                                    conf_y = start_y + cell_h + 55
+                                    cv2.putText(frame, conf_str, (conf_x, conf_y),
+                                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, conf_color, 1)
+                    except:
+                        pass
+                
+                out.write(frame)
+                frame_idx += 1
+        finally:
+            cap.release()
+            out.release()
+        
+        return output_path
