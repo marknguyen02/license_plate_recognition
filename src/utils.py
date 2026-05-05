@@ -42,14 +42,17 @@ def remove_character_duplicate_boxes(objects, iou_thresh):
             return 0.0
 
         return inter_area / union_area
-    
+
     filtered_objs = []
     while objects:
         current = objects.pop(0)
         filtered_objs.append(current)
-        objects = [obj for obj in objects if iou_score(current['box'], obj['box']) < iou_thresh]
+        objects = [
+            obj for obj in objects if iou_score(current["box"], obj["box"]) < iou_thresh
+        ]
 
     return filtered_objs
+
 
 def sort_objects(objects, plate):
     if plate["label"] == "one_row":
@@ -110,9 +113,7 @@ def smart_padding(img_crop):
     left, right = delta_w // 2, delta_w - delta_w // 2
 
     padded = cv2.copyMakeBorder(
-        gray, top, bottom, left, right,
-        borderType=cv2.BORDER_CONSTANT,
-        value=mean_val
+        gray, top, bottom, left, right, borderType=cv2.BORDER_CONSTANT, value=mean_val
     )
 
     return padded

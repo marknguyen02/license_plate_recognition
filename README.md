@@ -13,15 +13,22 @@ This project applies **Ultralytics YOLO** for license plate detection and a **Py
 
 ---
 
+## Workflow
+![](./assets/workflow.png)
+
+---
+
 ## Results
 
-Comprehensive evaluation outputs are available in the [`data/outputs`](./data/outputs).  
+Comprehensive evaluation outputs are available in [`dataset_test/outputs`](./dataset_test/outputs).  
+Real-world test videos are available in [`videos`](./videos/), showcasing system performance under various conditions.
+
 Below are a few illustrative examples:
 
 | Input Image | Model Output |
 |-------------|--------------|
-| ![Sample 1](data/images/carlong_0283.png) | ![Result](data/outputs/carlong_0283.png) |
-| ![Sample 2](data/images/greenpack_1210.png) | ![Result](data/outputs/greenpack_1210.png) |
+| ![Sample 1](./dataset_test/images/carlong_0283.png) | ![Result](./dataset_test/outputs/carlong_0283.png) |
+| ![Sample 2](./dataset_test/images/greenpack_1210.png) | ![Result](./dataset_test/outputs/greenpack_1210.png) |
 
 ---
 
@@ -47,7 +54,8 @@ Run the demo notebook demo.ipynb
 
 ## Contact
 
-* Gmail: [dungnguyen.workspace@gmail.com](mailto:dungnguyen.workspace@gmail.com)
+- Gmail: [dungnguyen.workspace@gmail.com](mailto:dungnguyen.workspace@gmail.com)
+- LinkedIn: [https://www.linkedin.com/in/marknguyen02/](https://www.linkedin.com/in/marknguyen02/)
 
 ---
 

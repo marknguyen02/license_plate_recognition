@@ -1,6 +1,6 @@
 notebooks/
-dataset/
-analysis/
+dataset_full/
+checkpoints/
 
 .venv
 .env
